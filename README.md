@@ -1,5 +1,7 @@
 # おおたに食堂 Incident Room
 
+![おおたに食堂 Incident Room の画面イメージ](assets/incident-room-reference.png)
+
 インシデントコマンダーの判断を短時間で体験するブラウザゲームです。最初の実装はRedisメモリ逼迫の1シナリオ、LLMなしで動作します。
 
 ## 開発
