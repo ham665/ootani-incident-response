@@ -13,6 +13,6 @@
   ],
   "vars": {
     "LLM_ENABLED": "false",
-    "ALLOWED_ORIGINS": "http://localhost:8787,http://127.0.0.1:8787"
+    "ALLOWED_ORIGINS": "http://localhost:8787,http://127.0.0.1:8787,https://ham665.github.io"
   }
 }
