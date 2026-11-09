@@ -9,6 +9,7 @@
       <section><h2>技術対応</h2><div id="technical" class="empty">サービスは正常です</div><div class="actions"><button data-command="investigate">レスポンダーに調査依頼</button><button data-command="record">スクライブに記録依頼</button><button data-command="quick">応急処置</button><button data-command="permanent">根本対応</button><button data-command="resolve">アラートをresolve</button></div><div id="score"></div></section>
     </main>
     <template id="setup"><div class="dialog"><h2>ゲームを開始</h2><p>LLMを使わずに完走できる、最初のRedis障害シナリオです。</p><button data-mode="easy">Easy（3分）</button><button data-mode="normal">Normal（5分）</button><p class="hint">ローカルAPI: <code id="api-url"></code></p></div></template>
+    <script src="./config.js"></script>
     <script type="module" src="./app.js"></script>
   </body>
 </html>

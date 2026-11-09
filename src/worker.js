@@ -16,7 +16,12 @@ export class GameSession {
       await this.ctx.storage.put({ state, accessToken, commands: {} });
       return json(view(state));
     }
-    const stored = await this.ctx.storage.get(["state", "accessToken", "commands"]);
+    const entries = await this.ctx.storage.get(["state", "accessToken", "commands"]);
+    const stored = {
+      state: entries.get("state"),
+      accessToken: entries.get("accessToken"),
+      commands: entries.get("commands") || {}
+    };
     if (!stored.state) return json({ error: "session_not_found" }, 404);
     if (bearer(request) !== stored.accessToken) return json({ error: "unauthorized" }, 401);
     if (request.method === "GET") { await this.ctx.storage.put("state", stored.state); return json(view(stored.state)); }
@@ -49,7 +54,13 @@ export default {
     if (match) {
       const stub = env.GAME_SESSION.get(env.GAME_SESSION.idFromName(match[1]));
       const target = match[2] ? "https://session/command" : "https://session/";
-      const response = await stub.fetch(target, request);
+      // A Durable Object receives its own internal URL. Passing the original
+      // public Request would retain `/sessions/<id>` and bypass its router.
+      const response = await stub.fetch(new Request(target, {
+        method: request.method,
+        headers: request.headers,
+        body: request.method === "GET" || request.method === "HEAD" ? undefined : request.body
+      }));
       return new Response(response.body, { status: response.status, headers: { "content-type": "application/json; charset=utf-8", ...cors(origin) } });
     }
     return json({ error: "not_found" }, 404, origin);
