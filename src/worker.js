@@ -1,7 +1,7 @@
 import { newGame, applyCommand, view } from "./engine.js";
 
 const json = (body, status = 200, origin = "") => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...cors(origin) } });
-const cors = (origin) => origin ? { "access-control-allow-origin": origin, "access-control-allow-methods": "GET, POST, OPTIONS", "access-control-allow-headers": "authorization, content-type", vary: "Origin" } : {};
+const cors = (origin) => origin ? { "access-control-allow-origin": origin, "access-control-allow-methods": "GET, POST, OPTIONS", "access-control-allow-headers": "authorization, content-type", "access-control-expose-headers": "x-session-id, x-access-token", vary: "Origin" } : {};
 function allowedOrigin(request, env) { const origin = request.headers.get("origin"); return origin && (env.ALLOWED_ORIGINS || "").split(",").includes(origin) ? origin : ""; }
 function bearer(request) { const match = request.headers.get("authorization")?.match(/^Bearer (.+)$/); return match?.[1] || ""; }
 function token() { const bytes = crypto.getRandomValues(new Uint8Array(24)); return btoa(String.fromCharCode(...bytes)).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", ""); }
