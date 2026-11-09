@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ootani-incident-api",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-11-09",
+  "durable_objects": {
+    "bindings": [
+      { "name": "GAME_SESSION", "class_name": "GameSession" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["GameSession"] }
+  ],
+  "vars": {
+    "LLM_ENABLED": "false",
+    "ALLOWED_ORIGINS": "http://localhost:8787,http://127.0.0.1:8787"
+  }
+}
