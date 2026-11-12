@@ -24,12 +24,12 @@ export class GameSession {
     };
     if (!stored.state) return json({ error: "session_not_found" }, 404);
     if (bearer(request) !== stored.accessToken) return json({ error: "unauthorized" }, 401);
-    if (request.method === "GET") { await this.ctx.storage.put("state", stored.state); return json(view(stored.state)); }
+    if (request.method === "GET") { const snapshot = view(stored.state); await this.ctx.storage.put("state", stored.state); return json(snapshot); }
     if (request.method === "POST" && url.pathname === "/command") {
-      const { command, operationId } = await request.json();
+      const { command, operationId, report } = await request.json();
       if (!operationId) return json({ error: "operation_id_required" }, 400);
       if (stored.commands[operationId]) return json(view(stored.state));
-      try { applyCommand(stored.state, command); stored.commands[operationId] = true; await this.ctx.storage.put({ state: stored.state, commands: stored.commands }); return json(view(stored.state)); }
+      try { applyCommand(stored.state, command, Date.now(), report || {}); stored.commands[operationId] = true; await this.ctx.storage.put({ state: stored.state, commands: stored.commands }); return json(view(stored.state)); }
       catch (error) { return json({ error: error.message }, 409); }
     }
     return json({ error: "not_found" }, 404);
@@ -59,6 +59,7 @@ export default {
       const response = await stub.fetch(new Request(target, {
         method: request.method,
         headers: request.headers,
+        duplex: "half",
         body: request.method === "GET" || request.method === "HEAD" ? undefined : request.body
       }));
       return new Response(response.body, { status: response.status, headers: { "content-type": "application/json; charset=utf-8", ...cors(origin) } });

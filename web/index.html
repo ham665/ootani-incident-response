@@ -5,8 +5,46 @@
     <header><h1>おおたに食堂 <small>Incident Room</small></h1><div id="timer">--:--</div><button id="pause">一時停止</button><button id="restart">新しいゲーム</button></header>
     <main>
       <section><h2>サービス</h2><div class="metric"><span>売上</span><strong id="revenue">¥0</strong></div><div class="metric"><span>待ち注文</span><strong id="pending">0</strong></div><div class="metric"><span>処理済み</span><strong id="completed">0</strong></div><div id="service-status" class="status good">正常</div></section>
-      <section><h2>アラート管理・報告</h2><div id="alert" class="empty">アラートはありません</div><div class="actions"><button data-command="ack">Acknowledge</button><button data-command="report">CTO・CSへ報告</button></div><h3>タイムライン</h3><ol id="events"></ol></section>
-      <section><h2>技術対応</h2><div id="technical" class="empty">サービスは正常です</div><div class="actions"><button data-command="investigate">レスポンダーに調査依頼</button><button data-command="record">スクライブに記録依頼</button><button data-command="quick">応急処置</button><button data-command="permanent">根本対応</button><button data-command="resolve">アラートをresolve</button></div><div id="score"></div></section>
+      <section>
+        <h2>アラート管理・報告</h2><div id="alert" class="empty">アラートはありません</div>
+        <div class="actions"><button data-command="ack">Acknowledge</button><button id="open-report" aria-expanded="false" aria-controls="report-composer">CTO・CSへ連絡</button></div>
+        <form id="report-composer" hidden>
+          <h3>関係者への連絡</h3>
+          <label for="report-recipient">宛先</label><select id="report-recipient"><option value="both">CTO・CS</option><option value="cto">CTO</option><option value="cs">CS</option></select>
+          <fieldset><legend>連絡内容を選択</legend>
+            <label class="report-option"><input type="radio" name="report-category" value="technical" checked /><span>技術的な連絡<small>障害箇所・調査結果・実施する対応</small></span></label>
+            <label class="report-option"><input type="radio" name="report-category" value="business" /><span>ビジネス的な連絡<small>顧客影響・待ち注文・売上・復旧見込み</small></span></label>
+          </fieldset>
+          <h4>送信プレビュー</h4><p id="report-preview"></p>
+          <div class="actions"><button id="send-report" type="submit">選んだ内容で連絡する</button><button id="cancel-report" type="button">閉じる</button></div>
+          <p id="report-feedback" role="status" aria-live="polite"></p>
+        </form>
+        <h3>連絡履歴</h3><ol id="reports"><li>まだ連絡していません</li></ol>
+        <h3>タイムライン</h3><ol id="events"></ol>
+      </section>
+      <section>
+        <h2>技術対応</h2>
+        <figure class="system-map" aria-labelledby="system-title">
+          <figcaption id="system-title">システム図 <small>矢印は依存する先</small></figcaption>
+          <svg viewBox="0 0 560 295" role="img" aria-labelledby="diagram-title diagram-description">
+            <title id="diagram-title">注文サービスの構成と影響範囲</title><desc id="diagram-description">ALB・WAFからfrontend、backendへ接続し、backendはRedisとMySQLに依存します。</desc>
+            <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
+            <path class="connection" d="M165 65H195" /><path id="frontend-backend" class="connection" d="M355 65H385" />
+            <path id="backend-redis" class="connection" d="M450 110V155H275V195" /><path class="connection" d="M475 110V195" />
+            <g id="node-alb" class="system-node healthy" transform="translate(10 20)"><rect width="155" height="90" rx="10"/><text x="77" y="35">ALB + WAF</text><text class="node-status" x="77" y="65">正常</text></g>
+            <g id="node-frontend" class="system-node healthy" transform="translate(200 20)"><rect width="155" height="90" rx="10"/><text x="77" y="35">frontend</text><text class="node-status" x="77" y="65">正常</text></g>
+            <g id="node-backend" class="system-node healthy" transform="translate(390 20)"><rect width="155" height="90" rx="10"/><text x="77" y="35">backend</text><text class="node-status" x="77" y="65">正常</text></g>
+            <g id="node-redis" class="system-node healthy" transform="translate(200 200)"><rect width="155" height="90" rx="10"/><text x="77" y="35">Redis cache</text><text class="node-status" x="77" y="65">正常</text></g>
+            <g id="node-mysql" class="system-node healthy" transform="translate(390 200)"><rect width="155" height="90" rx="10"/><text x="77" y="35">MySQL</text><text class="node-status" x="77" y="65">正常・正本保持</text></g>
+          </svg>
+          <p class="map-legend"><span class="legend-fault">● 障害箇所</span><span class="legend-impact">● 影響あり</span><span class="legend-healthy">● 正常</span></p>
+          <p id="impact-summary">注文処理は正常です。</p>
+        </figure>
+        <h3>レスポンダー</h3><div id="technical" aria-live="polite">サービスは正常です</div>
+        <div class="actions"><button data-command="investigate">レスポンダーに調査依頼</button><button data-command="record">スクライブに記録依頼</button></div>
+        <div id="remediation-options" hidden><h3>レスポンダーの対応提案</h3><div id="proposal-cards"></div></div>
+        <div class="actions"><button data-command="resolve">アラートをresolve</button></div><div id="score"></div>
+      </section>
     </main>
     <template id="setup"><div class="dialog"><h2>ゲームを開始</h2><p>LLMを使わずに完走できる、最初のRedis障害シナリオです。</p><button data-mode="easy">Easy（3分）</button><button data-mode="normal">Normal（5分）</button><p class="hint">ローカルAPI: <code id="api-url"></code></p></div></template>
     <script src="./config.js"></script>
