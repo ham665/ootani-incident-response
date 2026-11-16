@@ -40,6 +40,7 @@ export default {
   async fetch(request, env) {
     const origin = allowedOrigin(request, env);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(origin) });
+    if (env.DEMO_RETIRED === "true") return json({ error: "demo_retired", message: "審査用デモの公開は終了しました。" }, 410, origin);
     const url = new URL(request.url);
     if (url.pathname === "/health") return json({ status: "ok", llmEnabled: env.LLM_ENABLED === "true" }, 200, origin);
     if (url.pathname === "/sessions" && request.method === "POST") {

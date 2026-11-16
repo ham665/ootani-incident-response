@@ -3,6 +3,15 @@ import assert from "node:assert/strict";
 import worker, { GameSession } from "../src/worker.js";
 import { newGame, advance } from "../src/engine.js";
 
+test("retired demo rejects requests before creating or reading a game session", async () => {
+  const env = { DEMO_RETIRED: "true", GAME_SESSION: { idFromName() { throw new Error("must not access storage"); } } };
+  for (const [path, method] of [["/health", "GET"], ["/sessions", "POST"], ["/sessions/old-id", "GET"]]) {
+    const response = await worker.fetch(new Request(`https://worker.test${path}`, {method}), env);
+    assert.equal(response.status, 410);
+    assert.equal((await response.json()).error, "demo_retired");
+  }
+});
+
 test("Pages can read the session credentials returned by the Worker", async () => {
   const origin = "https://ham665.github.io";
   const env = {

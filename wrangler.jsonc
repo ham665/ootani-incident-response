@@ -3,6 +3,8 @@
   "name": "ootani-incident-api",
   "main": "src/worker.js",
   "compatibility_date": "2026-11-09",
+  "workers_dev": false,
+  "preview_urls": false,
   "durable_objects": {
     "bindings": [
       { "name": "GAME_SESSION", "class_name": "GameSession" }
@@ -12,6 +14,7 @@
     { "tag": "v1", "new_sqlite_classes": ["GameSession"] }
   ],
   "vars": {
+    "DEMO_RETIRED": "true",
     "LLM_ENABLED": "false",
     "ALLOWED_ORIGINS": "http://localhost:8787,http://127.0.0.1:8787,https://ham665.github.io"
   }

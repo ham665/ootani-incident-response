@@ -1,53 +1,52 @@
 <!doctype html>
 <html lang="ja">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>おおたに食堂 — Incident Room</title><link rel="stylesheet" href="./style.css" /></head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="おおたに食堂 Incident Room。インシデントコマンダーを体験するゲームの制作記録。審査用デモの公開は終了しました。" />
+    <title>おおたに食堂 Incident Room — 制作記録</title>
+    <link rel="stylesheet" href="./archive.css" />
+  </head>
   <body>
-    <header><h1>おおたに食堂 <small>Incident Room</small></h1><div id="timer">--:--</div><button id="pause">一時停止</button><button id="restart">新しいゲーム</button></header>
     <main>
-      <section><h2>サービス</h2><div class="metric"><span>売上</span><strong id="revenue">¥0</strong></div><div class="metric"><span>待ち注文</span><strong id="pending">0</strong></div><div class="metric"><span>処理済み</span><strong id="completed">0</strong></div><div id="service-status" class="status good">正常</div></section>
-      <section>
-        <h2>アラート管理・報告</h2><div id="alert" class="empty">アラートはありません</div>
-        <div class="actions"><button data-command="ack">Acknowledge</button><button id="open-report" aria-expanded="false" aria-controls="report-composer">CTO・CSへ連絡</button></div>
-        <form id="report-composer" hidden>
-          <h3>関係者への連絡</h3>
-          <label for="report-recipient">宛先</label><select id="report-recipient"><option value="both">CTO・CS</option><option value="cto">CTO</option><option value="cs">CS</option></select>
-          <fieldset><legend>連絡内容を選択</legend>
-            <label class="report-option"><input type="radio" name="report-category" value="technical" checked /><span>技術的な連絡<small>障害箇所・調査結果・実施する対応</small></span></label>
-            <label class="report-option"><input type="radio" name="report-category" value="business" /><span>ビジネス的な連絡<small>顧客影響・待ち注文・売上・復旧見込み</small></span></label>
-          </fieldset>
-          <h4>送信プレビュー</h4><p id="report-preview"></p>
-          <div class="actions"><button id="send-report" type="submit">選んだ内容で連絡する</button><button id="cancel-report" type="button">閉じる</button></div>
-          <p id="report-feedback" role="status" aria-live="polite"></p>
-        </form>
-        <h3>連絡履歴</h3><ol id="reports"><li>まだ連絡していません</li></ol>
-        <h3>タイムライン</h3><ol id="events"></ol>
+      <header>
+        <p class="eyebrow">PROJECT ARCHIVE</p>
+        <h1>おおたに食堂 <span>Incident Room</span></h1>
+        <p class="intro">障害を見つけ、チームを動かし、サービスを復旧する。<br />インシデントコマンダーの判断を体験するブラウザゲームです。</p>
+        <p class="notice"><strong>審査用デモの公開は終了しました。</strong><br />現在は制作記録・画面・操作動画を公開しています。ゲームとAPIは停止しており、このページからAPIへの通信は行いません。</p>
+        <nav aria-label="プロジェクトの資料">
+          <a href="https://github.com/ham665/ootani-incident-response">ソースコード</a>
+          <a href="https://github.com/ham665/ootani-incident-response/tree/demo-final-2026-11-16">最終プレイ版</a>
+          <a href="https://github.com/ham665/ootani-incident-response/blob/main/docs/retirement.md">構成・再公開手順</a>
+        </nav>
+      </header>
+      <section aria-labelledby="experience-title">
+        <h2 id="experience-title">体験できたこと</h2>
+        <div class="features">
+          <article><h3>影響範囲を見極める</h3><p>Redisの障害と、backend・frontendへの影響をシステム図で可視化。注文の滞留と売上からビジネスへの影響を把握します。</p></article>
+          <article><h3>対応を判断する</h3><p>レスポンダーの調査結果を読み、Redisコンテナの再起動かメモリ設定の修正か、所要時間と効果を比較して指示します。</p></article>
+          <article><h3>関係者に伝える</h3><p>CTO・CSへ技術的／ビジネス的な内容を選んで連絡。復旧報告と記録・resolveまで含めて、対応全体を体験します。</p></article>
+        </div>
+        <p class="muted">Easy：3分 ／ Normal：5分。最終公開版はLLMなしで動作するシミュレーションです。</p>
       </section>
-      <section>
-        <h2>技術対応</h2>
-        <figure class="system-map" aria-labelledby="system-title">
-          <figcaption id="system-title">システム図 <small>矢印は依存する先</small></figcaption>
-          <svg viewBox="0 0 560 295" role="img" aria-labelledby="diagram-title diagram-description">
-            <title id="diagram-title">注文サービスの構成と影響範囲</title><desc id="diagram-description">ALB・WAFからfrontend、backendへ接続し、backendはRedisとMySQLに依存します。</desc>
-            <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
-            <path class="connection" d="M165 65H195" /><path id="frontend-backend" class="connection" d="M355 65H385" />
-            <path id="backend-redis" class="connection" d="M450 110V155H275V195" /><path class="connection" d="M475 110V195" />
-            <g id="node-alb" class="system-node healthy" transform="translate(10 20)"><rect width="155" height="90" rx="10"/><text x="77" y="35">ALB + WAF</text><text class="node-status" x="77" y="65">正常</text></g>
-            <g id="node-frontend" class="system-node healthy" transform="translate(200 20)"><rect width="155" height="90" rx="10"/><text x="77" y="35">frontend</text><text class="node-status" x="77" y="65">正常</text></g>
-            <g id="node-backend" class="system-node healthy" transform="translate(390 20)"><rect width="155" height="90" rx="10"/><text x="77" y="35">backend</text><text class="node-status" x="77" y="65">正常</text></g>
-            <g id="node-redis" class="system-node healthy" transform="translate(200 200)"><rect width="155" height="90" rx="10"/><text x="77" y="35">Redis cache</text><text class="node-status" x="77" y="65">正常</text></g>
-            <g id="node-mysql" class="system-node healthy" transform="translate(390 200)"><rect width="155" height="90" rx="10"/><text x="77" y="35">MySQL</text><text class="node-status" x="77" y="65">正常・正本保持</text></g>
-          </svg>
-          <p class="map-legend"><span class="legend-fault">● 障害箇所</span><span class="legend-impact">● 影響あり</span><span class="legend-healthy">● 正常</span></p>
-          <p id="impact-summary">注文処理は正常です。</p>
-        </figure>
-        <h3>レスポンダー</h3><div id="technical" aria-live="polite">サービスは正常です</div>
-        <div class="actions"><button data-command="investigate">レスポンダーに調査依頼</button><button data-command="record">スクライブに記録依頼</button></div>
-        <div id="remediation-options" hidden><h3>レスポンダーの対応提案</h3><div id="proposal-cards"></div></div>
-        <div class="actions"><button data-command="resolve">アラートをresolve</button></div><div id="score"></div>
+      <section aria-labelledby="video-title">
+        <h2 id="video-title">操作動画</h2>
+        <p>最終版を実ブラウザで操作した記録です。障害発生、連絡、調査、応急処置、復旧報告、営業終了まで収録しています。</p>
+        <video controls preload="none" poster="./assets/gameplay-proposals.png" aria-label="Easyモードの開始から営業終了までの操作記録">
+          <source src="./assets/demo-playthrough.webm" type="video/webm" />
+          <a href="./assets/demo-playthrough.webm">操作動画をダウンロード</a>
+        </video>
+        <p class="muted">音声なし。動画は再生を押したときだけ読み込みます。</p>
       </section>
+      <section aria-labelledby="screens-title">
+        <h2 id="screens-title">プレイ画面</h2>
+        <div class="gallery">
+          <figure><a href="./assets/gameplay-proposals.png"><img src="./assets/gameplay-proposals.png" alt="Redis障害箇所と影響範囲、レスポンダーの具体的な対応提案" loading="lazy" width="1440" height="1440" /></a><figcaption>影響範囲と、Redis障害に沿った対応案</figcaption></figure>
+          <figure><a href="./assets/gameplay-report.png"><img src="./assets/gameplay-report.png" alt="宛先と技術的またはビジネス的な連絡内容を選ぶ画面" loading="lazy" width="1440" height="1600" /></a><figcaption>宛先・連絡内容の選択と送信履歴</figcaption></figure>
+          <figure><a href="./assets/gameplay-finished.png"><img src="./assets/gameplay-finished.png" alt="Normalを5分プレイし、最終スコア100点で終了した画面" loading="lazy" width="1440" height="1440" /></a><figcaption>営業終了と最終結果</figcaption></figure>
+        </div>
+      </section>
+      <footer><p>制作：ham665 · 最終プレイ版と復元手順はGitHubに保存しています。</p></footer>
     </main>
-    <template id="setup"><div class="dialog"><h2>ゲームを開始</h2><p>LLMを使わずに完走できる、最初のRedis障害シナリオです。</p><button data-mode="easy">Easy（3分）</button><button data-mode="normal">Normal（5分）</button><p class="hint">ローカルAPI: <code id="api-url"></code></p></div></template>
-    <script src="./config.js"></script>
-    <script type="module" src="./app.js"></script>
   </body>
 </html>
